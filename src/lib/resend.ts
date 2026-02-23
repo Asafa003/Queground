@@ -1,6 +1,10 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) throw new Error("RESEND_API_KEY is not set");
+  return new Resend(apiKey);
+}
 
 export async function sendTicketEmail(params: {
   to: string;
@@ -15,6 +19,7 @@ export async function sendTicketEmail(params: {
   quantity: number;
 }): Promise<void> {
   const { to, name, eventName, date, venue, location, tier, reference, qrCodeDataUrl, quantity } = params;
+  const resend = getResend();
 
   await resend.emails.send({
     from: "Queground <tickets@queground.com>",

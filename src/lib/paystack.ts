@@ -1,5 +1,10 @@
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY!;
 const PAYSTACK_BASE_URL = "https://api.paystack.co";
+
+function getSecretKey(): string {
+  const key = process.env.PAYSTACK_SECRET_KEY;
+  if (!key) throw new Error("PAYSTACK_SECRET_KEY is not set");
+  return key;
+}
 
 interface PaystackInitResponse {
   status: boolean;
@@ -36,7 +41,7 @@ export async function initializeTransaction(params: {
   const res = await fetch(`${PAYSTACK_BASE_URL}/transaction/initialize`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+      Authorization: `Bearer ${getSecretKey()}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(params),
@@ -56,7 +61,7 @@ export async function verifyTransaction(
     `${PAYSTACK_BASE_URL}/transaction/verify/${reference}`,
     {
       headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+        Authorization: `Bearer ${getSecretKey()}`,
       },
     }
   );
@@ -74,7 +79,7 @@ export function verifyWebhookSignature(
 ): boolean {
   const crypto = require("crypto");
   const hash = crypto
-    .createHmac("sha512", PAYSTACK_SECRET_KEY)
+    .createHmac("sha512", getSecretKey())
     .update(body)
     .digest("hex");
   return hash === signature;
