@@ -12,20 +12,20 @@ export default function About() {
             </p>
             <h2 className="font-[family-name:var(--font-space-grotesk)] text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
               What is{" "}
-              <span className="text-[#DC2626]">Queground</span>?
+              <span className="text-[#DC2626]">Que Ground</span>?
             </h2>
             <div className="mt-6 space-y-4 text-[#A1A1AA] text-base sm:text-lg leading-relaxed">
               <p>
-                Queground is a culture-driving event platform that brings the
-                best of music, nightlife, and community together. Our events are
-                more than just parties — they&apos;re experiences that connect people
-                through the power of sound and shared energy.
+                QUE GROUND is more than just a music event, it&apos;s a celebration
+                of community, creativity, and collaboration. It provides a
+                powerful platform where individuals from all walks of life come
+                together to share opportunities and uplift one another.
               </p>
               <p>
-                From electrifying DJ sets to unforgettable nights under the
-                lights, Queground is where the vibes are always right.
-                Based in Ijebu-Ode, Ogun State, we&apos;re building a movement
-                that celebrates local talent and global sound.
+                Beyond music, QUE GROUND embraces connections across fashion,
+                technology, and other industries, empowering talents to innovate,
+                express, and grow together. It&apos;s a space where culture meets
+                progress and everyone has a chance to shine.
               </p>
             </div>
 

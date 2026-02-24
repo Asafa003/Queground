@@ -45,7 +45,7 @@ export default function Navbar() {
               href="/"
               className="font-[family-name:var(--font-space-grotesk)] text-xl sm:text-2xl font-bold text-white"
             >
-              QUE<span className="text-[#DC2626]">GROUND</span>
+              QUE <span className="text-[#DC2626]">GROUND</span>
             </a>
 
             {/* Desktop Nav */}

@@ -38,6 +38,24 @@ export const currentEvent: Event = {
       maxQuantity: 5,
       available: true,
     },
+    {
+      id: "groundshakers",
+      name: "GROUNDSHAKERS",
+      price: 30000000, // ₦300,000 in kobo
+      displayPrice: "₦300,000",
+      description: "The ultimate experience",
+      perks: [
+        "All VIP perks included",
+        "Exclusive GROUNDSHAKERS lounge",
+        "Premium bottle service",
+        "Backstage access",
+        "Personal host & security",
+        "Artist meet & greet",
+        "Branded merch package",
+      ],
+      maxQuantity: 2,
+      available: true,
+    },
   ],
 };
 

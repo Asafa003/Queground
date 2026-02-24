@@ -25,7 +25,7 @@ export default function Hero() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20">
         {/* Tagline */}
         <p className="text-[#DC2626] text-sm sm:text-base uppercase tracking-[0.3em] font-medium mb-4">
-          Queground Presents
+          Que Ground Presents
         </p>
 
         {/* Event Title */}

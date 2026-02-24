@@ -6,7 +6,7 @@ export default function Footer() {
           {/* Logo & Tagline */}
           <div className="text-center md:text-left">
             <h3 className="font-[family-name:var(--font-space-grotesk)] text-2xl font-bold text-white">
-              QUE<span className="text-[#DC2626]">GROUND</span>
+              QUE <span className="text-[#DC2626]">GROUND</span>
             </h3>
             <p className="text-[#A1A1AA] text-sm mt-1">
               Where the vibes never stop.
@@ -67,7 +67,7 @@ export default function Footer() {
         {/* Divider + Copyright */}
         <div className="mt-8 pt-8 border-t border-white/5 text-center">
           <p className="text-[#52525B] text-sm">
-            &copy; {new Date().getFullYear()} Queground. All rights reserved.
+            &copy; {new Date().getFullYear()} Que Ground. All rights reserved.
           </p>
         </div>
       </div>
