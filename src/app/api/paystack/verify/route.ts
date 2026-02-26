@@ -37,6 +37,18 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    // Verify amount matches to prevent manipulation
+    if (result.data.amount !== order.amount) {
+      await updateOrderStatus(reference, "failed");
+      console.error(
+        `Amount mismatch: expected ${order.amount}, got ${result.data.amount} for ${reference}`
+      );
+      return NextResponse.json(
+        { error: "Payment amount mismatch" },
+        { status: 400 }
+      );
+    }
+
     // Generate QR code
     const qrCode = await generateQRCodeDataURL(
       reference,

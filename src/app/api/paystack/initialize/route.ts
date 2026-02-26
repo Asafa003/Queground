@@ -3,16 +3,58 @@ import { initializeTransaction } from "@/lib/paystack";
 import { saveOrder } from "@/lib/store";
 import { generateReference } from "@/lib/utils";
 import { currentEvent } from "@/data/events";
+import { isRateLimited } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 5 requests per minute per IP
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      "unknown";
+    if (isRateLimited(ip, 5, 60_000)) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const { name, email, phone, tierId, quantity } = body;
 
-    // Validate inputs
+    // Validate inputs exist
     if (!name || !email || !phone || !tierId || !quantity) {
       return NextResponse.json(
         { error: "All fields are required" },
+        { status: 400 }
+      );
+    }
+
+    // Type and length checks
+    if (
+      typeof name !== "string" ||
+      typeof email !== "string" ||
+      typeof phone !== "string" ||
+      typeof tierId !== "string"
+    ) {
+      return NextResponse.json(
+        { error: "Invalid input types" },
+        { status: 400 }
+      );
+    }
+
+    if (name.length > 100 || email.length > 254 || phone.length > 20) {
+      return NextResponse.json(
+        { error: "Input exceeds maximum length" },
+        { status: 400 }
+      );
+    }
+
+    // Sanitize name — allow only letters, spaces, hyphens, apostrophes
+    const sanitizedName = name.trim();
+    if (!/^[a-zA-Z\s'-]{2,100}$/.test(sanitizedName)) {
+      return NextResponse.json(
+        { error: "Name contains invalid characters" },
         { status: 400 }
       );
     }
@@ -24,7 +66,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (quantity < 1 || quantity > 5) {
+    // Validate Nigerian phone number
+    const cleanPhone = phone.replace(/[\s-]/g, "");
+    if (!/^(\+234|0)[789]\d{9}$/.test(cleanPhone)) {
+      return NextResponse.json(
+        { error: "Enter a valid Nigerian phone number" },
+        { status: 400 }
+      );
+    }
+
+    if (typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 1 || quantity > 5) {
       return NextResponse.json(
         { error: "Quantity must be between 1 and 5" },
         { status: 400 }
@@ -46,13 +97,13 @@ export async function POST(req: NextRequest) {
 
     // Initialize Paystack transaction
     const result = await initializeTransaction({
-      email,
+      email: email.trim().toLowerCase(),
       amount,
       reference,
       callback_url: `${origin}/tickets/${reference}`,
       metadata: {
-        name,
-        phone,
+        name: sanitizedName,
+        phone: cleanPhone,
         tier: tier.id,
         tierName: tier.name,
         quantity: String(quantity),
@@ -63,9 +114,9 @@ export async function POST(req: NextRequest) {
     // Save order as pending
     await saveOrder({
       reference,
-      name,
-      email,
-      phone,
+      name: sanitizedName,
+      email: email.trim().toLowerCase(),
+      phone: cleanPhone,
       tier: tier.id,
       tierName: tier.name,
       quantity,

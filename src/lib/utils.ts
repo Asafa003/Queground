@@ -14,7 +14,8 @@ export function formatNaira(amount: number): string {
 }
 
 export function generateReference(): string {
+  const crypto = require("crypto");
   const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).substring(2, 8);
+  const random = crypto.randomBytes(8).toString("hex");
   return `QG-${timestamp}-${random}`.toUpperCase();
 }

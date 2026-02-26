@@ -6,19 +6,19 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 bg-[#DC2626]/10">
         <Image
           src={currentEvent.flyerImage}
           alt={currentEvent.title}
           fill
-          className="object-cover object-center"
+          className="object-contain sm:object-cover object-top sm:object-center" 
           priority
           sizes="100vw"
-          quality={85}
+          quality={90}
         />
-        {/* Gradient Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/90" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/60" />
+        {/* Gradient Overlays - lighter to reveal more image detail */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80 sm:from-black/60 sm:via-black/30 sm:to-black/85" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30 hidden sm:block" />
       </div>
 
       {/* Content */}

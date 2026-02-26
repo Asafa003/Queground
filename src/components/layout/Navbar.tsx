@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
 
@@ -13,6 +14,8 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const isTicketsPage = pathname.startsWith("/tickets");
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -50,18 +53,25 @@ export default function Navbar() {
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-8">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="text-[#A1A1AA] hover:text-white transition-colors text-sm uppercase tracking-wider font-medium"
-                >
-                  {link.label}
-                </a>
-              ))}
-              <Button href="/tickets" size="sm">
-                Get Tickets
-              </Button>
+              {!isTicketsPage &&
+                navLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="text-[#A1A1AA] hover:text-white transition-colors text-sm uppercase tracking-wider font-medium"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              {isTicketsPage ? (
+                <Button href="/" size="sm">
+                  Home
+                </Button>
+              ) : (
+                <Button href="/tickets" size="sm">
+                  Get Tickets
+                </Button>
+              )}
             </div>
 
             {/* Mobile Hamburger */}
@@ -102,23 +112,34 @@ export default function Navbar() {
             : "opacity-0 pointer-events-none"
         )}
       >
-        {navLinks.map((link) => (
-          <a
-            key={link.href}
-            href={link.href}
+        {!isTicketsPage &&
+          navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className="text-2xl font-[family-name:var(--font-space-grotesk)] font-bold text-white hover:text-[#DC2626] transition-colors uppercase tracking-wider"
+            >
+              {link.label}
+            </a>
+          ))}
+        {isTicketsPage ? (
+          <Button
+            href="/"
+            size="lg"
             onClick={() => setMobileOpen(false)}
-            className="text-2xl font-[family-name:var(--font-space-grotesk)] font-bold text-white hover:text-[#DC2626] transition-colors uppercase tracking-wider"
           >
-            {link.label}
-          </a>
-        ))}
-        <Button
-          href="/tickets"
-          size="lg"
-          onClick={() => setMobileOpen(false)}
-        >
-          Get Tickets
-        </Button>
+            Home
+          </Button>
+        ) : (
+          <Button
+            href="/tickets"
+            size="lg"
+            onClick={() => setMobileOpen(false)}
+          >
+            Get Tickets
+          </Button>
+        )}
       </div>
     </>
   );

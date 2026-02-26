@@ -1,7 +1,11 @@
 import QRCode from "qrcode";
 import crypto from "crypto";
 
-const QR_SECRET = process.env.QR_SECRET || "queground-secret-key";
+function getQRSecret(): string {
+  const secret = process.env.QR_SECRET;
+  if (!secret) throw new Error("QR_SECRET is not set");
+  return secret;
+}
 
 export function generateQRPayload(data: {
   reference: string;
@@ -11,7 +15,7 @@ export function generateQRPayload(data: {
 }): string {
   const payload = JSON.stringify(data);
   const signature = crypto
-    .createHmac("sha256", QR_SECRET)
+    .createHmac("sha256", getQRSecret())
     .update(payload)
     .digest("hex")
     .slice(0, 16);

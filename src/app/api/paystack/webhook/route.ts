@@ -27,6 +27,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
+    // Verify amount matches to prevent manipulation
+    if (event.data.amount !== order.amount) {
+      console.error(
+        `Webhook amount mismatch: expected ${order.amount}, got ${event.data.amount} for ${reference}`
+      );
+      await updateOrderStatus(reference, "failed");
+      return NextResponse.json({ received: true });
+    }
+
     // Generate QR code
     const qrCode = await generateQRCodeDataURL(
       reference,
