@@ -1,40 +1,62 @@
-import { promises as fs } from "fs";
-import path from "path";
+import { createClient } from "@supabase/supabase-js";
 import { Order } from "@/types";
 
-const STORE_PATH = path.join(process.cwd(), "data", "orders.json");
-
-async function ensureStore(): Promise<void> {
-  try {
-    await fs.access(STORE_PATH);
-  } catch {
-    await fs.mkdir(path.dirname(STORE_PATH), { recursive: true });
-    await fs.writeFile(STORE_PATH, JSON.stringify([], null, 2));
-  }
+function getSupabase() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("Supabase credentials are not set");
+  return createClient(url, key);
 }
 
-export async function getOrders(): Promise<Order[]> {
-  await ensureStore();
-  const data = await fs.readFile(STORE_PATH, "utf-8");
-  return JSON.parse(data);
+// Map database row to Order type
+function rowToOrder(row: Record<string, unknown>): Order {
+  return {
+    reference: row.reference as string,
+    name: row.name as string,
+    email: row.email as string,
+    phone: row.phone as string,
+    tier: row.tier as string,
+    tierName: row.tier_name as string,
+    quantity: row.quantity as number,
+    amount: row.amount as number,
+    status: row.status as Order["status"],
+    createdAt: row.created_at as string,
+    confirmedAt: (row.confirmed_at as string) || undefined,
+    qrCode: (row.qr_code as string) || undefined,
+  };
 }
 
 export async function getOrder(reference: string): Promise<Order | null> {
-  const orders = await getOrders();
-  return orders.find((o) => o.reference === reference) || null;
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("reference", reference)
+    .single();
+
+  if (error || !data) return null;
+  return rowToOrder(data);
 }
 
 export async function saveOrder(order: Order): Promise<void> {
-  const orders = await getOrders();
-  const existingIndex = orders.findIndex((o) => o.reference === order.reference);
+  const supabase = getSupabase();
+  const { error } = await supabase.from("orders").upsert(
+    {
+      reference: order.reference,
+      name: order.name,
+      email: order.email,
+      phone: order.phone,
+      tier: order.tier,
+      tier_name: order.tierName,
+      quantity: order.quantity,
+      amount: order.amount,
+      status: order.status,
+      created_at: order.createdAt,
+    },
+    { onConflict: "reference" }
+  );
 
-  if (existingIndex >= 0) {
-    orders[existingIndex] = order;
-  } else {
-    orders.push(order);
-  }
-
-  await fs.writeFile(STORE_PATH, JSON.stringify(orders, null, 2));
+  if (error) throw new Error(`Failed to save order: ${error.message}`);
 }
 
 export async function updateOrderStatus(
@@ -42,14 +64,19 @@ export async function updateOrderStatus(
   status: Order["status"],
   extras?: Partial<Order>
 ): Promise<Order | null> {
-  const orders = await getOrders();
-  const order = orders.find((o) => o.reference === reference);
+  const supabase = getSupabase();
 
-  if (!order) return null;
+  const updateData: Record<string, unknown> = { status };
+  if (extras?.confirmedAt) updateData.confirmed_at = extras.confirmedAt;
+  if (extras?.qrCode) updateData.qr_code = extras.qrCode;
 
-  order.status = status;
-  if (extras) Object.assign(order, extras);
+  const { data, error } = await supabase
+    .from("orders")
+    .update(updateData)
+    .eq("reference", reference)
+    .select()
+    .single();
 
-  await fs.writeFile(STORE_PATH, JSON.stringify(orders, null, 2));
-  return order;
+  if (error || !data) return null;
+  return rowToOrder(data);
 }
