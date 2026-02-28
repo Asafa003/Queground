@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
         to: order.email,
         name: order.name,
         eventName: currentEvent.title,
-        date: "April 18, 2026",
+        date: new Date(currentEvent.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
         venue: currentEvent.venue,
         location: currentEvent.location,
         tier: order.tierName,

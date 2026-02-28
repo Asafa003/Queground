@@ -16,11 +16,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Queground | VIBES PARTY",
-  description: "Get your tickets for VIBES PARTY featuring DJ Qamal. April 2026, Ijebu-Ode, Ogun State.",
+  description: "Get your tickets for VIBES PARTY featuring DJ Qamal. April 2026, Amugan Hall, Irewon, Ijebu-Ode, Ogun State.",
   keywords: ["Queground", "VIBES PARTY", "DJ Qamal", "Ijebu-Ode", "party", "tickets", "events"],
   openGraph: {
     title: "Queground | VIBES PARTY",
-    description: "Get your tickets for VIBES PARTY featuring DJ Qamal. April 2026, Ijebu-Ode.",
+    description: "Get your tickets for VIBES PARTY featuring DJ Qamal. April 2026, Amugan Hall, Irewon, Ijebu-Ode.",
     type: "website",
     images: ["/images/Quecode Vibes party.jpeg"],
   },

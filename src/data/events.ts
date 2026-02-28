@@ -4,10 +4,10 @@ export const currentEvent: Event = {
   id: "vibes-party-2026",
   title: "VIBES PARTY",
   tagline: "The Ultimate Party Experience",
-  date: "2026-04-18T21:00:00",
+  date: "2026-04-11T21:00:00",
   time: "9PM – 4AM",
-  venue: "TBA",
-  location: "Ijebu-Ode, Ogun State",
+  venue: "Amugan Hall, Irewon",
+  location: "Ijebu-Ode. Ogun State",
   description:
     "Queground presents VIBES PARTY — an unforgettable night of music, energy, and culture featuring DJ Qamal. Come experience the best of nightlife in Ijebu-Ode.",
   flyerImage: "/images/Quecode Vibes party.jpeg",

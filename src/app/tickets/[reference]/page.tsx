@@ -7,6 +7,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Button from "@/components/ui/Button";
 import { Order } from "@/types";
+import { currentEvent } from "@/data/events";
 
 export default function TicketConfirmationPage() {
   const params = useParams();
@@ -149,7 +150,7 @@ export default function TicketConfirmationPage() {
                   </div>
                   <div className="flex justify-between py-2 border-b border-white/5">
                     <span className="text-[#52525B] text-sm">Date</span>
-                    <span className="text-white text-sm">April 18, 2026</span>
+                    <span className="text-white text-sm">{new Date(currentEvent.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
                   </div>
                   <div className="flex justify-between py-2 border-b border-white/5">
                     <span className="text-[#52525B] text-sm">Time</span>
@@ -158,7 +159,7 @@ export default function TicketConfirmationPage() {
                   <div className="flex justify-between py-2 border-b border-white/5">
                     <span className="text-[#52525B] text-sm">Location</span>
                     <span className="text-white text-sm">
-                      Ijebu-Ode, Ogun State
+                      {currentEvent.venue}, {currentEvent.location}
                     </span>
                   </div>
                   <div className="flex justify-between py-2 border-b border-white/5">
