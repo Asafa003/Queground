@@ -154,7 +154,7 @@ export default function TicketConfirmationPage() {
                   </div>
                   <div className="flex justify-between py-2 border-b border-white/5">
                     <span className="text-[#52525B] text-sm">Time</span>
-                    <span className="text-white text-sm">9PM – 4AM</span>
+                    <span className="text-white text-sm">{currentEvent.time}</span>
                   </div>
                   <div className="flex justify-between py-2 border-b border-white/5">
                     <span className="text-[#52525B] text-sm">Location</span>

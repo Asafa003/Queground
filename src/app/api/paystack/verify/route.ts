@@ -4,14 +4,35 @@ import { getOrder, updateOrderStatus } from "@/lib/store";
 import { generateQRCodeDataURL } from "@/lib/qrcode";
 import { sendTicketEmail } from "@/lib/resend";
 import { currentEvent } from "@/data/events";
+import { isRateLimited } from "@/lib/rate-limit";
 
 export async function GET(req: NextRequest) {
   try {
+    // Rate limit verify endpoint
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      "unknown";
+    if (isRateLimited(`verify:${ip}`, 10, 60_000)) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const reference = req.nextUrl.searchParams.get("reference");
 
     if (!reference) {
       return NextResponse.json(
         { error: "Reference is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate reference format to prevent injection
+    if (!/^QG-[A-Z0-9]{1,20}-[A-Z0-9]{1,20}$/i.test(reference)) {
+      return NextResponse.json(
+        { error: "Invalid reference format" },
         { status: 400 }
       );
     }

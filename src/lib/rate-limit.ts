@@ -14,6 +14,16 @@ export function isRateLimited(
   windowMs: number = 60_000
 ): boolean {
   const now = Date.now();
+
+  // Inline cleanup of expired entries (max 50 per call to avoid slowdown)
+  let cleaned = 0;
+  for (const [k, entry] of rateMap) {
+    if (now > entry.resetTime) {
+      rateMap.delete(k);
+      if (++cleaned >= 50) break;
+    }
+  }
+
   const entry = rateMap.get(key);
 
   if (!entry || now > entry.resetTime) {
@@ -28,13 +38,3 @@ export function isRateLimited(
 
   return false;
 }
-
-// Periodically clean up expired entries to prevent memory leak
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of rateMap) {
-    if (now > entry.resetTime) {
-      rateMap.delete(key);
-    }
-  }
-}, 60_000);

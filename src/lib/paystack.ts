@@ -82,5 +82,13 @@ export function verifyWebhookSignature(
     .createHmac("sha512", getSecretKey())
     .update(body)
     .digest("hex");
-  return hash === signature;
+  // Use timing-safe comparison to prevent timing attacks
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(hash, "hex"),
+      Buffer.from(signature, "hex")
+    );
+  } catch {
+    return false;
+  }
 }

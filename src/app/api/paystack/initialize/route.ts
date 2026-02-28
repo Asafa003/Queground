@@ -75,14 +75,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 1 || quantity > 5) {
-      return NextResponse.json(
-        { error: "Quantity must be between 1 and 5" },
-        { status: 400 }
-      );
-    }
-
-    // Find ticket tier
+    // Find ticket tier first to check maxQuantity
     const tier = currentEvent.ticketTiers.find((t) => t.id === tierId);
     if (!tier || !tier.available) {
       return NextResponse.json(
@@ -91,9 +84,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 1 || quantity > tier.maxQuantity) {
+      return NextResponse.json(
+        { error: `Quantity must be between 1 and ${tier.maxQuantity}` },
+        { status: 400 }
+      );
+    }
+
     const reference = generateReference();
     const amount = tier.price * quantity;
-    const origin = req.headers.get("origin") || "http://localhost:3000";
+
+    // Whitelist allowed origins to prevent redirect to phishing sites
+    const allowedOrigins = [
+      "https://queground.com",
+      "https://www.queground.com",
+      "http://localhost:3000",
+    ];
+    const rawOrigin = req.headers.get("origin") || "";
+    const origin = allowedOrigins.includes(rawOrigin)
+      ? rawOrigin
+      : allowedOrigins[0];
 
     // Initialize Paystack transaction
     const result = await initializeTransaction({

@@ -6,6 +6,15 @@ function getResend() {
   return new Resend(apiKey);
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export async function sendTicketEmail(params: {
   to: string;
   name: string;
@@ -18,7 +27,15 @@ export async function sendTicketEmail(params: {
   qrCodeDataUrl: string;
   quantity: number;
 }): Promise<void> {
-  const { to, name, eventName, date, venue, location, tier, reference, qrCodeDataUrl, quantity } = params;
+  const { to, qrCodeDataUrl, quantity } = params;
+  // Escape all user-supplied values before injecting into HTML
+  const name = escapeHtml(params.name);
+  const eventName = escapeHtml(params.eventName);
+  const date = escapeHtml(params.date);
+  const venue = escapeHtml(params.venue);
+  const location = escapeHtml(params.location);
+  const tier = escapeHtml(params.tier);
+  const reference = escapeHtml(params.reference);
   const resend = getResend();
 
   await resend.emails.send({

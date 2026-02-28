@@ -67,7 +67,7 @@ export default function TicketsPage() {
               {currentEvent.title}
             </h1>
             <p className="text-[#A1A1AA] mt-2">
-              {currentEvent.time} • {currentEvent.location}
+              {currentEvent.time} • {currentEvent.venue}, {currentEvent.location}
             </p>
           </div>
 
@@ -76,7 +76,10 @@ export default function TicketsPage() {
             {currentEvent.ticketTiers.map((t) => (
               <button
                 key={t.id}
-                onClick={() => setSelectedTier(t.id)}
+                onClick={() => {
+                  setSelectedTier(t.id);
+                  setQuantity(1);
+                }}
                 className={cn(
                   "relative p-6 rounded-xl border-2 text-left transition-all duration-300 cursor-pointer",
                   selectedTier === t.id
@@ -212,7 +215,7 @@ export default function TicketsPage() {
                   onChange={(e) => setQuantity(Number(e.target.value))}
                   className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#DC2626] transition-colors"
                 >
-                  {[1, 2, 3, 4, 5].map((n) => (
+                  {Array.from({ length: tier.maxQuantity }, (_, i) => i + 1).map((n) => (
                     <option key={n} value={n}>
                       {n} {n === 1 ? "ticket" : "tickets"}
                     </option>
