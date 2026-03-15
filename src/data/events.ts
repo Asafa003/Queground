@@ -6,7 +6,7 @@ export const currentEvent: Event = {
   tagline: "The Ultimate Party Experience",
   date: "2026-04-11T21:00:00",
   time: "9PM – 4AM",
-  venue: "Amugan Hall, Irewon",
+  venue: "Oopl Obanta Hall, Imowo",
   location: "Ijebu-Ode. Ogun State",
   description:
     "Queground presents VIBES PARTY — an unforgettable night of music, energy, and culture featuring DJ Qamal. Come experience the best of nightlife in Ijebu-Ode.",
