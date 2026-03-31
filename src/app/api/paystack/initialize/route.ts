@@ -96,8 +96,8 @@ export async function POST(req: NextRequest) {
 
     // Whitelist allowed origins to prevent redirect to phishing sites
     const allowedOrigins = [
-      "https://queground.com",
       "https://www.queground.com",
+      "https://queground.com",
       "http://localhost:3000",
     ];
     const rawOrigin = req.headers.get("origin") || "";
