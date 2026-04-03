@@ -47,6 +47,7 @@ export const currentEvent: Event = {
       perks: [
         "All VIP perks included",
         "Exclusive GROUNDSHAKERS lounge",
+        "Table for 6",
         "2 MARTELL VS, 2 MIXER, 1 SHISHA",
         "Backstage access",
         "Personal host & security",
