@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import { currentEvent } from "@/data/events";
+import { isEventEnded } from "@/lib/eventStatus";
 
 export default function Hero() {
   return (
@@ -40,38 +41,52 @@ export default function Hero() {
 
         {/* Event Info */}
         <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-6 text-[#A1A1AA]">
-          <div className="flex items-center gap-2">
-            <svg
-              className="w-4 h-4 text-[#DC2626]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-            <span className="text-sm sm:text-base font-semibold text-white">{new Date(currentEvent.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg
-              className="w-4 h-4 text-[#DC2626]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <span className="text-sm sm:text-base font-semibold text-white">{currentEvent.time}</span>
-          </div>
+          {isEventEnded(currentEvent) ? (
+            <p className="text-sm sm:text-base font-semibold text-white text-center max-w-2xl leading-relaxed px-2">
+              {currentEvent.postEventThanks}
+            </p>
+          ) : (
+            <>
+              <div className="flex items-center gap-2">
+                <svg
+                  className="w-4 h-4 text-[#DC2626]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <span className="text-sm sm:text-base font-semibold text-white">
+                  {new Date(currentEvent.date).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg
+                  className="w-4 h-4 text-[#DC2626]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span className="text-sm sm:text-base font-semibold text-white">{currentEvent.time}</span>
+              </div>
+            </>
+          )}
           <div className="flex items-center gap-2">
             <svg
               className="w-4 h-4 text-[#DC2626]"
@@ -93,7 +108,7 @@ export default function Hero() {
               />
             </svg>
             <span className="text-sm sm:text-base font-semibold text-white">
-              {currentEvent.venue}, {currentEvent.location}
+              {currentEvent.venue} {currentEvent.location}
             </span>
           </div>
         </div>

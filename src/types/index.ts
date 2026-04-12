@@ -2,7 +2,9 @@ export interface Event {
   id: string;
   title: string;
   tagline: string;
-  date: string; // ISO date string
+  date: string; 
+  endsAt?: string;
+  postEventThanks?: string;
   time: string;
   venue: string;
   location: string;
@@ -14,7 +16,7 @@ export interface Event {
 export interface TicketTier {
   id: string;
   name: string;
-  price: number; // in kobo for Paystack
+  price: number; 
   displayPrice: string;
   description: string;
   perks: string[];
