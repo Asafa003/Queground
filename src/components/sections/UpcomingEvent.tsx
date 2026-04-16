@@ -135,15 +135,23 @@ export default function UpcomingEvent() {
 
             {/* CTA */}
             <div className="mt-10">
-              <Button href="/tickets" size="lg">
-                Get Your Ticket
-              </Button>
+              {isEventEnded(currentEvent) ? (
+                <Button href="#gallery" size="lg" variant="outline">
+                  View Event Gallery
+                </Button>
+              ) : (
+                <Button href="/tickets" size="lg">
+                  Get Your Ticket
+                </Button>
+              )}
             </div>
 
             {/* Ticket Price Hint */}
-            <p className="text-[#52525B] text-sm mt-4">
-              Starting from {currentEvent.ticketTiers[0].displayPrice}
-            </p>
+            {!isEventEnded(currentEvent) && (
+              <p className="text-[#52525B] text-sm mt-4">
+                Starting from {currentEvent.ticketTiers[0].displayPrice}
+              </p>
+            )}
           </div>
         </div>
       </div>

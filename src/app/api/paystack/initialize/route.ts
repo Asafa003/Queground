@@ -4,9 +4,18 @@ import { saveOrder } from "@/lib/store";
 import { generateReference } from "@/lib/utils";
 import { currentEvent } from "@/data/events";
 import { isRateLimited } from "@/lib/rate-limit";
+import { isEventEnded } from "@/lib/eventStatus";
 
 export async function POST(req: NextRequest) {
   try {
+    // Check if event has ended
+    if (isEventEnded(currentEvent)) {
+      return NextResponse.json(
+        { error: "Ticket sales have ended for this event." },
+        { status: 400 }
+      );
+    }
+
     // Rate limit: 5 requests per minute per IP
     const ip =
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||

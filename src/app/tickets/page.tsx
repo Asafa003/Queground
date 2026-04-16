@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { currentEvent } from "@/data/events";
+import { isEventEnded } from "@/lib/eventStatus";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Button from "@/components/ui/Button";
@@ -18,11 +19,13 @@ export default function TicketsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const eventEnded = isEventEnded(currentEvent);
   const tier = currentEvent.ticketTiers.find((t) => t.id === selectedTier)!;
   const total = (tier.price / 100) * quantity;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (eventEnded) return;
     setError("");
     setLoading(true);
 
@@ -139,157 +142,190 @@ export default function TicketsPage() {
           </div>
 
           {/* Purchase Form */}
-          <form
-            onSubmit={handleSubmit}
-            className="bg-[#141414] border border-white/10 rounded-xl p-6 sm:p-8"
-          >
-            <h2 className="font-[family-name:var(--font-space-grotesk)] text-xl font-bold text-white mb-6">
-              Your Details
-            </h2>
-
-            <div className="space-y-4">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm text-[#A1A1AA] mb-1"
-                >
-                  Full Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-[#52525B] focus:outline-none focus:border-[#DC2626] transition-colors"
-                  placeholder="Enter your full name"
-                />
+          <div className="bg-[#141414] border border-white/10 rounded-xl p-6 sm:p-8">
+            {eventEnded ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-[#DC2626]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg
+                    className="w-8 h-8 text-[#DC2626]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h2 className="font-[family-name:var(--font-space-grotesk)] text-2xl font-bold text-white mb-2">
+                  Ticket Sales Closed
+                </h2>
+                <p className="text-[#A1A1AA] mb-6">
+                  {currentEvent.postEventThanks}
+                </p>
+                <div className="flex justify-center">
+                  <Button href="/#gallery" variant="outline">
+                    View Event Gallery
+                  </Button>
+                </div>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <h2 className="font-[family-name:var(--font-space-grotesk)] text-xl font-bold text-white mb-6">
+                  Your Details
+                </h2>
 
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm text-[#A1A1AA] mb-1"
-                >
-                  Email Address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-[#52525B] focus:outline-none focus:border-[#DC2626] transition-colors"
-                  placeholder="your@email.com"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="phone"
-                  className="block text-sm text-[#A1A1AA] mb-1"
-                >
-                  Phone Number
-                </label>
-                <input
-                  id="phone"
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-[#52525B] focus:outline-none focus:border-[#DC2626] transition-colors"
-                  placeholder="08012345678"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="quantity"
-                  className="block text-sm text-[#A1A1AA] mb-1"
-                >
-                  Quantity
-                </label>
-                <select
-                  id="quantity"
-                  value={quantity}
-                  onChange={(e) => setQuantity(Number(e.target.value))}
-                  className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#DC2626] transition-colors"
-                >
-                  {Array.from({ length: tier.maxQuantity }, (_, i) => i + 1).map((n) => (
-                    <option key={n} value={n}>
-                      {n} {n === 1 ? "ticket" : "tickets"}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Order Summary */}
-            <div className="mt-6 p-4 bg-[#0A0A0A] rounded-lg border border-white/5">
-              <div className="flex justify-between text-sm text-[#A1A1AA]">
-                <span>
-                  {tier.name} × {quantity}
-                </span>
-                <span className="text-white">
-                  ₦{total.toLocaleString()}
-                </span>
-              </div>
-              <div className="mt-3 pt-3 border-t border-white/5 flex justify-between">
-                <span className="font-[family-name:var(--font-space-grotesk)] font-bold text-white">
-                  Total
-                </span>
-                <span className="font-[family-name:var(--font-space-grotesk)] text-2xl font-bold text-[#DC2626]">
-                  ₦{total.toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            {error && (
-              <div className="mt-4 p-3 bg-red-900/20 border border-red-900/50 rounded-lg text-red-400 text-sm">
-                {error}
-              </div>
-            )}
-
-            <div className="mt-6">
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full"
-                disabled={loading}
-              >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <svg
-                      className="animate-spin w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
+                <div className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block text-sm text-[#A1A1AA] mb-1"
                     >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                      />
-                    </svg>
-                    Processing...
-                  </span>
-                ) : (
-                  `Pay ₦${total.toLocaleString()}`
-                )}
-              </Button>
-            </div>
+                      Full Name
+                    </label>
+                    <input
+                      id="name"
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-[#52525B] focus:outline-none focus:border-[#DC2626] transition-colors"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
 
-            <p className="text-center text-[#52525B] text-xs mt-4">
-              Payments are securely processed by Paystack
-            </p>
-          </form>
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-sm text-[#A1A1AA] mb-1"
+                    >
+                      Email Address
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-[#52525B] focus:outline-none focus:border-[#DC2626] transition-colors"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="phone"
+                      className="block text-sm text-[#A1A1AA] mb-1"
+                    >
+                      Phone Number
+                    </label>
+                    <input
+                      id="phone"
+                      type="tel"
+                      required
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-[#52525B] focus:outline-none focus:border-[#DC2626] transition-colors"
+                      placeholder="08012345678"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="quantity"
+                      className="block text-sm text-[#A1A1AA] mb-1"
+                    >
+                      Quantity
+                    </label>
+                    <select
+                      id="quantity"
+                      value={quantity}
+                      onChange={(e) => setQuantity(Number(e.target.value))}
+                      className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#DC2626] transition-colors"
+                    >
+                      {Array.from(
+                        { length: tier.maxQuantity },
+                        (_, i) => i + 1
+                      ).map((n) => (
+                        <option key={n} value={n}>
+                          {n} {n === 1 ? "ticket" : "tickets"}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Order Summary */}
+                <div className="mt-6 p-4 bg-[#0A0A0A] rounded-lg border border-white/5">
+                  <div className="flex justify-between text-sm text-[#A1A1AA]">
+                    <span>
+                      {tier.name} × {quantity}
+                    </span>
+                    <span className="text-white">
+                      ₦{total.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-white/5 flex justify-between">
+                    <span className="font-[family-name:var(--font-space-grotesk)] font-bold text-white">
+                      Total
+                    </span>
+                    <span className="font-[family-name:var(--font-space-grotesk)] text-2xl font-bold text-[#DC2626]">
+                      ₦{total.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="mt-4 p-3 bg-red-900/20 border border-red-900/50 rounded-lg text-red-400 text-sm">
+                    {error}
+                  </div>
+                )}
+
+                <div className="mt-6">
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <span className="flex items-center gap-2">
+                        <svg
+                          className="animate-spin w-5 h-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          />
+                        </svg>
+                        Processing...
+                      </span>
+                    ) : (
+                      `Pay ₦${total.toLocaleString()}`
+                    )}
+                  </Button>
+                </div>
+
+                <p className="text-center text-[#52525B] text-xs mt-4">
+                  Payments are securely processed by Paystack
+                </p>
+              </form>
+            )}
+          </div>
         </div>
       </main>
       <Footer />

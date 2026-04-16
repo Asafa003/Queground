@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
+import { currentEvent } from "@/data/events";
+import { isEventEnded } from "@/lib/eventStatus";
 
 const navLinks = [
   { label: "About", href: "#about" },
@@ -63,8 +65,8 @@ export default function Navbar() {
                     {link.label}
                   </a>
                 ))}
-              {isTicketsPage ? (
-                <Button href="/" size="sm">
+              {isTicketsPage || isEventEnded(currentEvent) ? (
+                <Button href="/" size="sm" variant="outline">
                   Home
                 </Button>
               ) : (
@@ -123,10 +125,11 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-        {isTicketsPage ? (
+        {isTicketsPage || isEventEnded(currentEvent) ? (
           <Button
             href="/"
             size="lg"
+            variant="outline"
             onClick={() => setMobileOpen(false)}
           >
             Home
